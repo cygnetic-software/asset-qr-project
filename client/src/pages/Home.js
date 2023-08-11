@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./Home.module.css";
 import DragDrop from "../components/Home/FileDrag";
 import asset from "../assets/asset.png";
 const Home = () => {
+  const [qrCode, setQrCode] = useState("");
+  const [newQR, setNewQR] = useState("");
+  useEffect(() => {
+    setNewQR(qrCode);
+  }, [qrCode]);
   return (
     <section className="py-3">
       <div className="container row my-3 mx-auto">
@@ -20,9 +25,20 @@ const Home = () => {
           </div>
         </div>
         <div className="col-lg-6 my-5">
-          <DragDrop />
+          <DragDrop setQrCode={setQrCode} />
         </div>
       </div>
+      {qrCode.length !== 0 && (
+        <>
+          <hr />
+          <div id="qr" className="container">
+            <h3>Results: </h3>
+            <div className="d-flex justify-content-center">
+              <img src={newQR} alt={newQR} className={classes.qrCode} />
+            </div>
+          </div>
+        </>
+      )}
     </section>
   );
 };

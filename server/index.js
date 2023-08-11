@@ -1,30 +1,27 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const multer = require("multer");
-const mongoose = require("mongoose");
-const http = require("http");
-
 const apiRouter = require("./api/api");
+const mongoose = require("mongoose");
 
-const server = http.createServer();
-const app = express(server);
 const PORT = process.env.PORT;
-const router = express.Router();
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
+const MONGO_URI = process.env.MONGODB_CONNECTION_STRING;
 
-const upload = multer({ storage: storage });
-module.exports = upload;
+const app = express();
+const router = express.Router();
+
+mongoose
+  .connect(MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((error) => console.error("Failed to connect to MongoDB:", error));
 
 app.use(cors());
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
+
 router.use("/api", apiRouter);
 
 app.use("/", router);
